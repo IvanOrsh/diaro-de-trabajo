@@ -1,5 +1,5 @@
 import { type ActionFunctionArgs, type MetaFunction } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
 import { PrismaClient } from "@prisma/client";
@@ -119,12 +119,7 @@ export default function Index() {
   }, [fetcher.state]);
 
   return (
-    <div className="p-20">
-      <h1 className="text-5xl">Diaro de Trabajo</h1>
-      <p className="mt-2 text-lg text-gray-400">
-        Learnings and doings. Updated weekly.
-      </p>
-
+    <>
       <div className="my-8 border p-2">
         <fetcher.Form method="post">
           <p className="italic">Create an entry.</p>
@@ -222,7 +217,15 @@ export default function Index() {
                   <p>Learnings</p>
                   <ul className="list-disc pl-8">
                     {week.learnings.map((entry) => (
-                      <li key={entry.id}>{entry.text}</li>
+                      <li className="group" key={entry.id}>
+                        {entry.text}
+                        <Link
+                          to={`/entries/${entry.id}/edit`}
+                          className="ml-2 text-blue-500 opacity-0 group-hover:opacity-100"
+                        >
+                          Edit
+                        </Link>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -242,6 +245,6 @@ export default function Index() {
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 }
