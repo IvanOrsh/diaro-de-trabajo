@@ -14,12 +14,46 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   return (
     <div className="p-20">
-      <p className="text-blue-500">Does tailwindcss really work?</p>
+      <h1 className="text-5xl">Diaro de Trabajo</h1>
+      <p className="mt-2 text-lg text-gray-400">
+        Learnings and doings. Updated weekly.
+      </p>
 
-      <ul className="flex flex-col p-2">
-        <li className="bg-blue-500 p-2">first</li>
-        <li className="mt-10 bg-red-500 p-2 ">second</li>
-      </ul>
+      <div className="mt-4">
+        <p className="font-bold">
+          Week of December 14<sup>th</sup>, 2023
+        </p>
+
+        <div className="mt-3 space-y-4">
+          {/* work */}
+          <div>
+            <p>Work</p>
+            <ul className="list-disc pl-8">
+              <li>First Item</li>
+              <li>Second Item</li>
+              <li>Third Item</li>
+            </ul>
+          </div>
+
+          <div>
+            <p>Learnings</p>
+            <ul className="list-disc pl-8">
+              <li>First Item</li>
+              <li>Second Item</li>
+              <li>Third Item</li>
+            </ul>
+          </div>
+
+          <div>
+            <p>Interesting things</p>
+            <ul className="list-disc pl-8">
+              <li>First Item</li>
+              <li>Second Item</li>
+              <li>Third Item</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
