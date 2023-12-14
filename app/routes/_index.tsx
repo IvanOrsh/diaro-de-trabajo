@@ -206,7 +206,7 @@ export default function Index() {
                   <p>Work</p>
                   <ul className="list-disc pl-8">
                     {week.work.map((entry) => (
-                      <li key={entry.id}>{entry.text}</li>
+                      <EntryListItem key={entry.id} entry={entry} />
                     ))}
                   </ul>
                 </div>
@@ -217,15 +217,7 @@ export default function Index() {
                   <p>Learnings</p>
                   <ul className="list-disc pl-8">
                     {week.learnings.map((entry) => (
-                      <li className="group" key={entry.id}>
-                        {entry.text}
-                        <Link
-                          to={`/entries/${entry.id}/edit`}
-                          className="ml-2 text-blue-500 opacity-0 group-hover:opacity-100"
-                        >
-                          Edit
-                        </Link>
-                      </li>
+                      <EntryListItem key={entry.id} entry={entry} />
                     ))}
                   </ul>
                 </div>
@@ -236,7 +228,7 @@ export default function Index() {
                   <p>Interesting things</p>
                   <ul className="list-disc pl-8">
                     {week.interestingThings.map((entry) => (
-                      <li key={entry.id}>{entry.text}</li>
+                      <EntryListItem key={entry.id} entry={entry} />
                     ))}
                   </ul>
                 </div>
@@ -246,5 +238,23 @@ export default function Index() {
         ))}
       </div>
     </>
+  );
+}
+
+function EntryListItem({
+  entry,
+}: {
+  entry: Awaited<ReturnType<typeof loader>>[number];
+}) {
+  return (
+    <li className="group" key={entry.id}>
+      {entry.text}
+      <Link
+        to={`/entries/${entry.id}/edit`}
+        className="ml-2 text-blue-500 opacity-0 group-hover:opacity-100"
+      >
+        Edit
+      </Link>
+    </li>
   );
 }
