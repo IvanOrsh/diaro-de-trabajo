@@ -1,10 +1,10 @@
 import { type ActionFunctionArgs, type MetaFunction } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
 import { PrismaClient } from "@prisma/client";
 
-import { format } from "date-fns";
+import { format, parseISO, startOfWeek } from "date-fns";
 
 export const meta: MetaFunction = () => {
   return [
@@ -45,9 +45,70 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 }
 
+export async function loader() {
+  const db = new PrismaClient();
+  const entries = await db.entry.findMany({
+    orderBy: {
+      date: "desc",
+    },
+  });
+
+  return entries.map((entry) => ({
+    ...entry,
+    date: entry.date.toISOString().substring(0, 10),
+  }));
+}
+
 export default function Index() {
   const fetcher = useFetcher();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const entries = useLoaderData<typeof loader>();
+
+  // const entriesByWeek = {
+  //   "2023-02-11": [entrie2],
+  //   "2023-02-18": [entrie1, entrie3],
+  // }
+  const entriesByWeek = entries.reduce<Record<string, typeof entries>>(
+    (acc, curEntry) => {
+      const sunday = startOfWeek(parseISO(curEntry.date));
+      const sundayStr = format(sunday, "yyyy-MM-dd");
+
+      acc[sundayStr] ||= [];
+      acc[sundayStr].push(curEntry);
+
+      return acc;
+    },
+    {}
+  );
+
+  // const weeks = [
+  //   {
+  //     dateString: '2023-02-20',
+  //     work: [],
+  //     learnings: [],
+  //     interestingThngs: [],
+  //   },
+  //   {
+  //     dateString: '2023-02-20',
+  //     work: [],
+  //     learnings: [],
+  //     interestingThngs: [],
+  //   }
+  // ]
+  const weeks = Object.keys(entriesByWeek)
+    .sort((a, b) => a.localeCompare(b)) // array of date strings
+    .map((dateString) => ({
+      dateString,
+      work: entriesByWeek[dateString].filter((entry) => entry.type === "work"),
+      learnings: entriesByWeek[dateString].filter(
+        (entry) => entry.type === "learning"
+      ),
+      interestingThings: entriesByWeek[dateString].filter(
+        (entry) => entry.type === "interesting-thing"
+      ),
+    }));
+
+  console.log(weeks);
 
   // clear & focus
   useEffect(() => {
@@ -108,7 +169,7 @@ export default function Index() {
                     className="mr-1"
                     type="radio"
                     name="category"
-                    value="Interesting-thing"
+                    value="interesting-thing"
                   />
                   Interesting things
                 </label>
@@ -137,40 +198,49 @@ export default function Index() {
         </fetcher.Form>
       </div>
 
-      <div className="mt-4">
-        <p className="font-bold">
-          Week of December 14<sup>th</sup>, 2023
-        </p>
+      <div className="mt-12 space-y-16">
+        {weeks.map((week) => (
+          <div key={week.dateString} className="mt-6">
+            <p className="font-bold">
+              Week of {format(parseISO(week.dateString), "MMM, do, yyyy")}
+            </p>
 
-        <div className="mt-3 space-y-4">
-          {/* work */}
-          <div>
-            <p>Work</p>
-            <ul className="list-disc pl-8">
-              <li>First Item</li>
-              <li>Second Item</li>
-              <li>Third Item</li>
-            </ul>
-          </div>
+            <div className="mt-3 space-y-4">
+              {week.work.length > 0 && (
+                <div>
+                  <p>Work</p>
+                  <ul className="list-disc pl-8">
+                    {week.work.map((entry) => (
+                      <li key={entry.id}>{entry.text}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-          <div>
-            <p>Learnings</p>
-            <ul className="list-disc pl-8">
-              <li>First Item</li>
-              <li>Second Item</li>
-              <li>Third Item</li>
-            </ul>
-          </div>
+              {week.learnings.length > 0 && (
+                <div>
+                  <p>Learnings</p>
+                  <ul className="list-disc pl-8">
+                    {week.learnings.map((entry) => (
+                      <li key={entry.id}>{entry.text}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-          <div>
-            <p>Interesting things</p>
-            <ul className="list-disc pl-8">
-              <li>First Item</li>
-              <li>Second Item</li>
-              <li>Third Item</li>
-            </ul>
+              {week.interestingThings.length > 0 && (
+                <div>
+                  <p>Interesting things</p>
+                  <ul className="list-disc pl-8">
+                    {week.interestingThings.map((entry) => (
+                      <li key={entry.id}>{entry.text}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );
