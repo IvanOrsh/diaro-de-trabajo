@@ -10,6 +10,12 @@ import EntryForm from "~/components/entry-form";
 import { getSession } from "~/session";
 
 export async function action({ request, params }: ActionFunctionArgs) {
+  // protect the action from unauthorized access
+  const session = await getSession(request.headers.get("cookie"));
+  if (!session.data.isAdmin) {
+    throw new Response("Unauthorized", { status: 401 });
+  }
+
   if (typeof params.entryId !== "string") {
     throw new Response("Not found", { status: 404 });
   }
