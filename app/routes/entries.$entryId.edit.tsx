@@ -4,7 +4,7 @@ import {
   redirect,
   type LoaderFunctionArgs,
 } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import EntryForm from "~/components/entry-form";
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -12,34 +12,39 @@ export async function action({ request, params }: ActionFunctionArgs) {
     throw new Response("Not found", { status: 404 });
   }
 
-  // TODO: extract to data layer
   const db = new PrismaClient();
-
   const formData = await request.formData();
-  // TODO: validate (zod?)
-  const { date, category, text } = Object.fromEntries(formData);
 
-  // TODO: remove delay
+  const { date, category, text, _action } = Object.fromEntries(formData);
+
   await new Promise((r) => setTimeout(r, 1000));
 
-  if (
-    typeof date !== "string" ||
-    typeof category !== "string" ||
-    typeof text !== "string"
-  ) {
-    throw new Error("Bad request");
-  }
+  if (_action === "delete") {
+    await db.entry.delete({
+      where: {
+        id: +params.entryId,
+      },
+    });
+  } else {
+    if (
+      typeof date !== "string" ||
+      typeof category !== "string" ||
+      typeof text !== "string"
+    ) {
+      throw new Error("Bad request");
+    }
 
-  await db.entry.update({
-    where: {
-      id: +params.entryId,
-    },
-    data: {
-      date: new Date(date),
-      type: category,
-      text: text,
-    },
-  });
+    await db.entry.update({
+      where: {
+        id: +params.entryId,
+      },
+      data: {
+        date: new Date(date),
+        type: category,
+        text: text,
+      },
+    });
+  }
 
   return redirect("/");
 }
@@ -68,12 +73,32 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function EditPage() {
   const entry = useLoaderData<typeof loader>();
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    if (!confirm("Are your sure?")) {
+      event.preventDefault();
+      console.log("yes");
+    }
+  }
+
   return (
     <div className="mt-4">
       <h1>Editing entry: {entry.id}</h1>
 
       <div className="mt-8">
         <EntryForm entry={entry} />
+      </div>
+
+      <div className="mt-8">
+        <Form method="post" onSubmit={handleSubmit}>
+          <button
+            name="_action"
+            value="delete"
+            className="text-gray-500 underline"
+          >
+            Delete this entry...
+          </button>
+        </Form>
       </div>
     </div>
   );

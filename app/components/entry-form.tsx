@@ -19,8 +19,6 @@ export default function EntryForm({
     }
   }, [fetcher.state, fetcher.data]);
 
-  console.log(fetcher.state);
-
   return (
     <fetcher.Form method="post">
       <fieldset
