@@ -1,4 +1,8 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  createCookieSessionStorage,
+} from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -6,9 +10,18 @@ export async function action({ request }: ActionFunctionArgs) {
   const { email, password } = Object.fromEntries(formData);
 
   if (email === "valid@email.com" && password === "valid_password") {
+    const storage = createCookieSessionStorage({
+      cookie: {
+        name: "diaro-de-trabajo-session",
+      },
+    });
+
+    const session = await storage.getSession();
+    session.set("isAdmin", true);
+
     return new Response("", {
       headers: {
-        "Set-Cookie": "admin=1",
+        "Set-Cookie": await storage.commitSession(session),
       },
     });
   }
@@ -17,8 +30,14 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const admin = request.headers.get("cookie")?.split("=")[1];
-  return { isAdmin: admin === "1" };
+  const storage = createCookieSessionStorage({
+    cookie: {
+      name: "diaro-de-trabajo-session",
+    },
+  });
+  const session = await storage.getSession(request.headers.get("cookie"));
+
+  return session.data;
 }
 
 export default function LoginPage() {
