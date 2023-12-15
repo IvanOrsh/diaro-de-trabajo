@@ -1,18 +1,28 @@
 import { useFetcher } from "@remix-run/react";
-import { useRef } from "react";
+import { format } from "date-fns";
+import { useEffect, useRef } from "react";
 
 export default function EntryForm({
   entry,
 }: {
-  entry: { date: string; type: string; text: string };
+  entry?: { date: string; type: string; text: string };
 }) {
   const fetcher = useFetcher();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
+  // clear & focus
+  useEffect(() => {
+    const isInit = fetcher.state === "idle" && fetcher.data == null;
+    if (!isInit && fetcher.state === "idle" && textAreaRef.current) {
+      textAreaRef.current.value = "";
+      textAreaRef.current.focus();
+    }
+  }, [fetcher.state, fetcher.data]);
+
+  console.log(fetcher.state);
+
   return (
     <fetcher.Form method="post">
-      <p className="italic">Create an entry.</p>
-
       <fieldset
         className="disabled:opacity-70"
         disabled={fetcher.state !== "idle"}
@@ -21,44 +31,39 @@ export default function EntryForm({
           {/* Date */}
           <div className="mt-4">
             <input
-              defaultValue={entry.date}
+              defaultValue={entry?.date ?? format(new Date(), "yyyy-MM-dd")}
               type="date"
               name="date"
               className="text-gray-700"
             />
           </div>
-          <div className="mt-4 space-x-6">
-            <label>
-              <input
-                className="mr-1"
-                type="radio"
-                name="category"
-                value="work"
-                required
-                defaultChecked={entry.type === "work"}
-              />
-              Work
-            </label>
-            <label>
-              <input
-                className="mr-1"
-                type="radio"
-                name="category"
-                value="learning"
-                defaultChecked={entry.type === "learning"}
-              />
-              Learning
-            </label>
-            <label>
-              <input
-                className="mr-1"
-                type="radio"
-                name="category"
-                value="interesting-thing"
-                defaultChecked={entry.type === "interesting-thing"}
-              />
-              Interesting things
-            </label>
+          <div className="mt-4 space-x-4">
+            {[
+              {
+                label: "Work",
+                value: "work",
+              },
+              {
+                label: "Learning",
+                value: "learning",
+              },
+              {
+                label: "Interesting things",
+                value: "interesting-thing",
+              },
+            ].map(({ label, value }) => (
+              <label key={value}>
+                <input
+                  className="mr-1"
+                  type="radio"
+                  name="category"
+                  value={value}
+                  required
+                  defaultChecked={value === (entry?.type ?? "work")}
+                />
+                {label}
+              </label>
+            ))}
           </div>
           {/* text field */}
           <div className="mt-4">
@@ -68,7 +73,7 @@ export default function EntryForm({
               className="w-full text-gray-700"
               placeholder="Write your entry..."
               required
-              defaultValue={entry.text}
+              defaultValue={entry?.text ?? ""}
             />
           </div>
           {/* submit button */}
@@ -77,7 +82,7 @@ export default function EntryForm({
               className="bg-blue-500 px-4 py-1 font-medium text-white "
               type="submit"
             >
-              {fetcher.state === "submitting" ? "Saving..." : "Save"}
+              {fetcher.state !== "idle" ? "Saving..." : "Save"}
             </button>
           </div>
         </div>

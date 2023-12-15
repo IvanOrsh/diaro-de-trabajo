@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { PrismaClient } from "@prisma/client";
 
 import { format, parseISO, startOfWeek } from "date-fns";
+import EntryForm from "~/components/entry-form";
 
 export const meta: MetaFunction = () => {
   return [
@@ -64,10 +65,6 @@ export default function Index() {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const entries = useLoaderData<typeof loader>();
 
-  // const entriesByWeek = {
-  //   "2023-02-11": [entrie2],
-  //   "2023-02-18": [entrie1, entrie3],
-  // }
   const entriesByWeek = entries.reduce<Record<string, typeof entries>>(
     (acc, curEntry) => {
       const sunday = startOfWeek(parseISO(curEntry.date));
@@ -80,21 +77,6 @@ export default function Index() {
     },
     {}
   );
-
-  // const weeks = [
-  //   {
-  //     dateString: '2023-02-20',
-  //     work: [],
-  //     learnings: [],
-  //     interestingThngs: [],
-  //   },
-  //   {
-  //     dateString: '2023-02-20',
-  //     work: [],
-  //     learnings: [],
-  //     interestingThngs: [],
-  //   }
-  // ]
   const weeks = Object.keys(entriesByWeek)
     .sort((a, b) => a.localeCompare(b)) // array of date strings
     .map((dateString) => ({
@@ -108,8 +90,6 @@ export default function Index() {
       ),
     }));
 
-  console.log(weeks);
-
   // clear & focus
   useEffect(() => {
     if (fetcher.state === "idle" && textAreaRef.current) {
@@ -121,15 +101,17 @@ export default function Index() {
   return (
     <>
       <div className="my-8 border p-2">
-        <fetcher.Form method="post">
-          <p className="italic">Create an entry.</p>
+        <p className="italic">Create an entry.</p>
+
+        <EntryForm />
+
+        {/* <fetcher.Form method="post">
 
           <fieldset
             className="disabled:opacity-70"
             disabled={fetcher.state !== "idle"}
           >
             <div>
-              {/* Date */}
               <div className="mt-4">
                 <input
                   defaultValue={format(new Date(), "yyyy-MM-dd")}
@@ -169,7 +151,6 @@ export default function Index() {
                   Interesting things
                 </label>
               </div>
-              {/* text field */}
               <div className="mt-2">
                 <textarea
                   ref={textAreaRef}
@@ -179,7 +160,6 @@ export default function Index() {
                   required
                 />
               </div>
-              {/* submit button */}
               <div className="mt-1 text-right">
                 <button
                   className="bg-blue-500 px-4 py-1 font-medium text-white "
@@ -190,7 +170,7 @@ export default function Index() {
               </div>
             </div>
           </fieldset>
-        </fetcher.Form>
+        </fetcher.Form> */}
       </div>
 
       <div className="mt-12 space-y-16">
