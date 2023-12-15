@@ -1,11 +1,14 @@
-import { type ActionFunctionArgs, type MetaFunction } from "@remix-run/node";
-import { Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { useEffect, useRef } from "react";
-
 import { PrismaClient } from "@prisma/client";
-
+import {
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+} from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
 import { format, parseISO, startOfWeek } from "date-fns";
+
 import EntryForm from "~/components/entry-form";
+import { getSession } from "~/session";
 
 export const meta: MetaFunction = () => {
   return [
@@ -46,7 +49,9 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 }
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await getSession(request.headers.get("cookie"));
+
   const db = new PrismaClient();
   const entries = await db.entry.findMany({
     orderBy: {
@@ -54,16 +59,17 @@ export async function loader() {
     },
   });
 
-  return entries.map((entry) => ({
-    ...entry,
-    date: entry.date.toISOString().substring(0, 10),
-  }));
+  return {
+    session: session.data,
+    entries: entries.map((entry) => ({
+      ...entry,
+      date: entry.date.toISOString().substring(0, 10),
+    })),
+  };
 }
 
 export default function Index() {
-  const fetcher = useFetcher();
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const entries = useLoaderData<typeof loader>();
+  const { session, entries } = useLoaderData<typeof loader>();
 
   const entriesByWeek = entries.reduce<Record<string, typeof entries>>(
     (acc, curEntry) => {
@@ -90,88 +96,14 @@ export default function Index() {
       ),
     }));
 
-  // clear & focus
-  useEffect(() => {
-    if (fetcher.state === "idle" && textAreaRef.current) {
-      textAreaRef.current.value = "";
-      textAreaRef.current.focus();
-    }
-  }, [fetcher.state]);
-
   return (
     <>
-      <div className="my-8 border p-2">
-        <p className="italic">Create an entry.</p>
-
-        <EntryForm />
-
-        {/* <fetcher.Form method="post">
-
-          <fieldset
-            className="disabled:opacity-70"
-            disabled={fetcher.state !== "idle"}
-          >
-            <div>
-              <div className="mt-4">
-                <input
-                  defaultValue={format(new Date(), "yyyy-MM-dd")}
-                  type="date"
-                  name="date"
-                  className="text-gray-700"
-                />
-              </div>
-              <div className="mt-4 space-x-6">
-                <label>
-                  <input
-                    className="mr-1"
-                    type="radio"
-                    name="category"
-                    value="work"
-                    required
-                    defaultChecked
-                  />
-                  Work
-                </label>
-                <label>
-                  <input
-                    className="mr-1"
-                    type="radio"
-                    name="category"
-                    value="learning"
-                  />
-                  Learning
-                </label>
-                <label>
-                  <input
-                    className="mr-1"
-                    type="radio"
-                    name="category"
-                    value="interesting-thing"
-                  />
-                  Interesting things
-                </label>
-              </div>
-              <div className="mt-2">
-                <textarea
-                  ref={textAreaRef}
-                  name="text"
-                  className="w-full text-gray-700"
-                  placeholder="Write your entry..."
-                  required
-                />
-              </div>
-              <div className="mt-1 text-right">
-                <button
-                  className="bg-blue-500 px-4 py-1 font-medium text-white "
-                  type="submit"
-                >
-                  {fetcher.state === "submitting" ? "Saving..." : "Save"}
-                </button>
-              </div>
-            </div>
-          </fieldset>
-        </fetcher.Form> */}
-      </div>
+      {session.isAdmin && (
+        <div className="my-8 border p-2">
+          <p className="italic">Create an entry.</p>
+          <EntryForm />
+        </div>
+      )}
 
       <div className="mt-12 space-y-16">
         {weeks.map((week) => (
@@ -224,7 +156,7 @@ export default function Index() {
 function EntryListItem({
   entry,
 }: {
-  entry: Awaited<ReturnType<typeof loader>>[number];
+  entry: Awaited<ReturnType<typeof loader>>["entries"][number];
 }) {
   return (
     <li className="group" key={entry.id}>
