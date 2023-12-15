@@ -118,7 +118,11 @@ export default function Index() {
                   <p>Work</p>
                   <ul className="list-disc pl-8">
                     {week.work.map((entry) => (
-                      <EntryListItem key={entry.id} entry={entry} />
+                      <EntryListItem
+                        key={entry.id}
+                        entry={entry}
+                        canEdit={session.isAdmin}
+                      />
                     ))}
                   </ul>
                 </div>
@@ -129,7 +133,11 @@ export default function Index() {
                   <p>Learnings</p>
                   <ul className="list-disc pl-8">
                     {week.learnings.map((entry) => (
-                      <EntryListItem key={entry.id} entry={entry} />
+                      <EntryListItem
+                        key={entry.id}
+                        entry={entry}
+                        canEdit={session.isAdmin}
+                      />
                     ))}
                   </ul>
                 </div>
@@ -140,7 +148,11 @@ export default function Index() {
                   <p>Interesting things</p>
                   <ul className="list-disc pl-8">
                     {week.interestingThings.map((entry) => (
-                      <EntryListItem key={entry.id} entry={entry} />
+                      <EntryListItem
+                        key={entry.id}
+                        entry={entry}
+                        canEdit={session.isAdmin}
+                      />
                     ))}
                   </ul>
                 </div>
@@ -155,18 +167,22 @@ export default function Index() {
 
 function EntryListItem({
   entry,
+  canEdit,
 }: {
   entry: Awaited<ReturnType<typeof loader>>["entries"][number];
+  canEdit: boolean;
 }) {
   return (
     <li className="group" key={entry.id}>
       {entry.text}
-      <Link
-        to={`/entries/${entry.id}/edit`}
-        className="ml-2 text-blue-500 opacity-0 group-hover:opacity-100"
-      >
-        Edit
-      </Link>
+      {canEdit && (
+        <Link
+          to={`/entries/${entry.id}/edit`}
+          className="ml-2 text-blue-500 opacity-0 group-hover:opacity-100"
+        >
+          Edit
+        </Link>
+      )}
     </li>
   );
 }
