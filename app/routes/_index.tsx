@@ -114,14 +114,19 @@ export default function Index() {
         </div>
       )}
 
-      <div className="mt-12 space-y-12">
+      <div className="mt-12 space-y-12 border-l-2 border-sky-500/[.25] pl-5">
         {weeks.map((week) => (
-          <div key={week.dateString} className="mt-6">
-            <p className="text-xs font-semibold uppercase tracking-wider text-sky-500">
+          <div key={week.dateString} className="relative">
+            {/* circle */}
+            <div className="absolute left-[-30px] rounded-full bg-gray-900 p-1">
+              <div className="h-[10px] w-[10px] rounded-full border border-sky-500 bg-gray-900"></div>
+            </div>
+
+            <p className="pt-[1px] text-xs font-semibold uppercase tracking-wider text-sky-500">
               {format(parseISO(week.dateString), "MMM d, yyyy")}
             </p>
 
-            <div className="mt-3 space-y-4">
+            <div className="mt-6 space-y-4">
               <EntryList entries={week?.work} label="work" />
 
               <EntryList entries={week?.learnings} label="learnings" />
@@ -152,7 +157,7 @@ function EntryList({
   return (
     <div>
       <p className="font-semibold capitalize text-white">{label}</p>
-      <ul className="ml-8 list-disc">
+      <ul className="mt-6 space-y-6">
         {entries.map((entry) => (
           <EntryListItem key={entry.id} entry={entry} />
         ))}
@@ -169,7 +174,7 @@ function EntryListItem({
   const { session } = useLoaderData<typeof loader>();
 
   return (
-    <li className="group" key={entry.id}>
+    <li className="group leading-7" key={entry.id}>
       {entry.text}
       {session.isAdmin && (
         <Link
