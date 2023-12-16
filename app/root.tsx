@@ -59,23 +59,36 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <div className="p-10">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-5xl">Diaro de Trabajo</h1>
-              <p className="mt-2 text-lg text-gray-400">
-                Learnings and doings. Updated weekly.
+        <div className="p-4">
+          <header>
+            <div className="flex justify-between text-sm">
+              <p className="uppercase">
+                <span className="text-gray-500">Ivan</span>
+                <span className="font-semibold text-gray-200">Orsh</span>
               </p>
+
+              <div className="text-gray-500">
+                {session.isAdmin ? (
+                  <Form method="post">
+                    <button>Logout</button>
+                  </Form>
+                ) : (
+                  <Link to="/login">Log in</Link>
+                )}
+              </div>
             </div>
 
-            {session.isAdmin ? (
-              <Form method="post">
-                <button>Logout</button>
-              </Form>
-            ) : (
-              <Link to="/login">Login</Link>
-            )}
-          </div>
+            <div className="mb-20 mt-16">
+              <div className="text-center">
+                <h1 className="text-5xl font-semibold tracking-tight text-white">
+                  <Link to="/">Diaro de Trabajo</Link>
+                </h1>
+                <p className="mt-2 tracking-tighter text-gray-500">
+                  Doings and learnings. Updated weekly.
+                </p>
+              </div>
+            </div>
+          </header>
 
           <Outlet />
         </div>
