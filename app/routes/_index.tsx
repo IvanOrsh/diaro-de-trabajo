@@ -25,7 +25,10 @@ export async function action({ request }: ActionFunctionArgs) {
   // protect the action from unauthorized access
   const session = await getSession(request.headers.get("cookie"));
   if (!session.data.isAdmin) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response("Unauthorized", {
+      status: 401,
+      statusText: "Unauthorized",
+    });
   }
 
   // TODO: extract to data layer

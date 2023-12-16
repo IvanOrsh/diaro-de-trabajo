@@ -13,11 +13,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
   // protect the action from unauthorized access
   const session = await getSession(request.headers.get("cookie"));
   if (!session.data.isAdmin) {
-    throw new Response("Unauthorized", { status: 401 });
+    throw new Response("Unauthorized", {
+      status: 401,
+      statusText: "Unauthorized",
+    });
   }
 
   if (typeof params.entryId !== "string") {
-    throw new Response("Not found", { status: 404 });
+    throw new Response("Not found", { status: 404, statusText: "Not found" });
   }
 
   const db = new PrismaClient();
@@ -58,8 +61,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  if (typeof params.entryId !== "string") {
-    throw new Response("Not found", { status: 404 });
+  if (typeof params.entryId !== "string" || isNaN(+params.entryId!)) {
+    throw new Response("Not found", { status: 404, statusText: "Not found" });
   }
 
   const db = new PrismaClient();
@@ -76,7 +79,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   // is this user is logged in (admin)?
   const session = await getSession(request.headers.get("cookie"));
   if (!session.data.isAdmin) {
-    throw new Response("Unauthorized", { status: 401 });
+    throw new Response("Unauthorized", {
+      status: 401,
+      statusText: "Unauthorized",
+    });
   }
 
   return {
