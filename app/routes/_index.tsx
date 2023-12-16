@@ -114,58 +114,22 @@ export default function Index() {
         </div>
       )}
 
-      <div className="mt-12 space-y-16">
+      <div className="mt-12 space-y-12">
         {weeks.map((week) => (
           <div key={week.dateString} className="mt-6">
-            <p className="font-bold">
-              Week of {format(parseISO(week.dateString), "MMM, do, yyyy")}
+            <p className="text-xs font-semibold uppercase tracking-wider text-sky-500">
+              {format(parseISO(week.dateString), "MMM d, yyyy")}
             </p>
 
             <div className="mt-3 space-y-4">
-              {week.work.length > 0 && (
-                <div>
-                  <p>Work</p>
-                  <ul className="list-disc pl-8">
-                    {week.work.map((entry) => (
-                      <EntryListItem
-                        key={entry.id}
-                        entry={entry}
-                        canEdit={session.isAdmin}
-                      />
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <EntryList entries={week?.work} label="work" />
 
-              {week.learnings.length > 0 && (
-                <div>
-                  <p>Learnings</p>
-                  <ul className="list-disc pl-8">
-                    {week.learnings.map((entry) => (
-                      <EntryListItem
-                        key={entry.id}
-                        entry={entry}
-                        canEdit={session.isAdmin}
-                      />
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <EntryList entries={week?.learnings} label="learnings" />
 
-              {week.interestingThings.length > 0 && (
-                <div>
-                  <p>Interesting things</p>
-                  <ul className="list-disc pl-8">
-                    {week.interestingThings.map((entry) => (
-                      <EntryListItem
-                        key={entry.id}
-                        entry={entry}
-                        canEdit={session.isAdmin}
-                      />
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <EntryList
+                entries={week?.interestingThings}
+                label="interesting things"
+              />
             </div>
           </div>
         ))}
@@ -174,17 +138,40 @@ export default function Index() {
   );
 }
 
+function EntryList({
+  entries,
+  label,
+}: {
+  entries: Awaited<ReturnType<typeof loader>>["entries"];
+  label: "work" | "learnings" | "interesting things";
+}) {
+  if (entries?.length === 0) {
+    return null;
+  }
+
+  return (
+    <div>
+      <p className="font-semibold capitalize text-white">{label}</p>
+      <ul className="ml-8 list-disc">
+        {entries.map((entry) => (
+          <EntryListItem key={entry.id} entry={entry} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function EntryListItem({
   entry,
-  canEdit,
 }: {
   entry: Awaited<ReturnType<typeof loader>>["entries"][number];
-  canEdit: boolean;
 }) {
+  const { session } = useLoaderData<typeof loader>();
+
   return (
     <li className="group" key={entry.id}>
       {entry.text}
-      {canEdit && (
+      {session.isAdmin && (
         <Link
           to={`/entries/${entry.id}/edit`}
           className="ml-2 text-blue-500 opacity-0 group-hover:opacity-100"
