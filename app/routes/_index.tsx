@@ -124,7 +124,7 @@ export default function Index() {
 
             {/* date */}
             <p className="pt-[px] text-xs font-semibold uppercase tracking-wider text-sky-500 lg:pt-[3px] lg:text-sm">
-              {format(parseISO(week.dateString), "MMM d, yyyy")}
+              Week of {format(parseISO(week.dateString), "MMM d, yyyy")}
             </p>
 
             <div className="mt-4 space-y-4 lg:space-y-12">
