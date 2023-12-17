@@ -58,40 +58,40 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
-        <div className="p-4">
-          <header>
-            <div className="flex justify-between text-sm">
-              <p className="uppercase">
-                <span className="text-gray-500">Ivan</span>
-                <span className="font-semibold text-gray-200">Orsh</span>
+      <body className="mx-auto max-w-xl p-4">
+        <header>
+          <div className="flex justify-between text-sm">
+            <p className="uppercase">
+              <span className="text-gray-500">Ivan</span>
+              <span className="font-semibold text-gray-200">Orsh</span>
+            </p>
+
+            <div className="text-gray-500">
+              {session.isAdmin ? (
+                <Form method="post">
+                  <button>Log out</button>
+                </Form>
+              ) : (
+                <Link to="/login">Log in</Link>
+              )}
+            </div>
+          </div>
+
+          <div className="my-20">
+            <div className="text-center">
+              <h1 className="text-5xl font-semibold tracking-tight text-white">
+                <Link to="/">Diaro de Trabajo</Link>
+              </h1>
+              <p className="mt-2 tracking-tighter text-gray-500">
+                Doings and learnings. Updated weekly.
               </p>
-
-              <div className="text-gray-500">
-                {session.isAdmin ? (
-                  <Form method="post">
-                    <button>Logout</button>
-                  </Form>
-                ) : (
-                  <Link to="/login">Log in</Link>
-                )}
-              </div>
             </div>
+          </div>
+        </header>
 
-            <div className="my-20">
-              <div className="text-center">
-                <h1 className="text-5xl font-semibold tracking-tight text-white">
-                  <Link to="/">Diaro de Trabajo</Link>
-                </h1>
-                <p className="mt-2 tracking-tighter text-gray-500">
-                  Doings and learnings. Updated weekly.
-                </p>
-              </div>
-            </div>
-          </header>
-
+        <main>
           <Outlet />
-        </div>
+        </main>
 
         <ScrollRestoration />
         <Scripts />

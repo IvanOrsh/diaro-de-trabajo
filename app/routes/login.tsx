@@ -51,7 +51,7 @@ export default function LoginPage() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <div className="mt-8">
+    <div className="mx-auto mt-8 max-w-xs">
       {data?.isAdmin ? (
         <p>You&apos;re signed in!</p>
       ) : (
@@ -63,6 +63,9 @@ export default function LoginPage() {
               name="email"
               placeholder="Email"
               required
+              style={{
+                colorScheme: "dark",
+              }}
             />
             <input
               className="w-full rounded-md border-gray-700 bg-gray-800 text-white focus:border-sky-600 focus:ring-sky-600"
@@ -70,11 +73,14 @@ export default function LoginPage() {
               name="password"
               placeholder="Password"
               required
+              style={{
+                colorScheme: "dark",
+              }}
             />
           </div>
 
           <div className="mt-8">
-            <button className="w-full rounded-md bg-sky-600 px-3 py-2 font-medium text-white focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 focus:ring-offset-gray-900">
+            <button className="w-full rounded-md bg-sky-600 px-3 py-2 font-medium text-white transition-all duration-150 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 focus:ring-offset-gray-900">
               Log in
             </button>
           </div>

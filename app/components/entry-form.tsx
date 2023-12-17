@@ -86,7 +86,7 @@ export default function EntryForm({
           {/* submit button */}
           <div className="mt-6 text-right">
             <button
-              className="w-full rounded-md bg-sky-600 px-3 py-2 font-medium text-white focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+              className="w-full rounded-md bg-sky-600 px-3 py-2 font-medium text-white transition-colors duration-100 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 focus:ring-offset-gray-900"
               type="submit"
             >
               {fetcher.state !== "idle" ? "Saving..." : "Save"}
