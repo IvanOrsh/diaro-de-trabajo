@@ -51,7 +51,7 @@ export default function LoginPage() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <div className="mx-auto mt-8 max-w-xs">
+    <div className="mx-auto mt-8 max-w-xs lg:max-w-sm">
       {data?.isAdmin ? (
         <p>You&apos;re signed in!</p>
       ) : (

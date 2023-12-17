@@ -58,15 +58,15 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="mx-auto max-w-xl p-4">
+      <body className="mx-auto max-w-xl p-4 lg:max-w-7xl">
         <header>
-          <div className="flex justify-between text-sm">
-            <p className="uppercase">
+          <div className="flex items-center justify-between lg:border-b lg:border-gray-800 lg:pb-5 lg:pt-1">
+            <p className="text-sm uppercase lg:text-lg">
               <span className="text-gray-500">Ivan</span>
               <span className="font-semibold text-gray-200">Orsh</span>
             </p>
 
-            <div className="text-gray-500">
+            <div className="text-sm font-medium text-gray-500 transition-colors duration-150 hover:text-gray-200">
               {session.isAdmin ? (
                 <Form method="post">
                   <button>Log out</button>
@@ -77,19 +77,19 @@ export default function App() {
             </div>
           </div>
 
-          <div className="my-20">
+          <div className="my-20 lg:my-28">
             <div className="text-center">
-              <h1 className="text-5xl font-semibold tracking-tight text-white">
+              <h1 className="text-5xl font-semibold tracking-tight text-white lg:text-7xl">
                 <Link to="/">Diaro de Trabajo</Link>
               </h1>
-              <p className="mt-2 tracking-tighter text-gray-500">
+              <p className="mt-2 tracking-tighter text-gray-500 lg:mt-4 lg:text-2xl">
                 Doings and learnings. Updated weekly.
               </p>
             </div>
           </div>
         </header>
 
-        <main>
+        <main className="mx-auto max-w-3xl">
           <Outlet />
         </main>
 
