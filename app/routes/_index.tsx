@@ -92,24 +92,22 @@ export default function Index() {
     },
     {}
   );
-  const weeks = Object.keys(entriesByWeek)
-    .sort((a, b) => a.localeCompare(b)) // array of date strings
-    .map((dateString) => ({
-      dateString,
-      work: entriesByWeek[dateString].filter((entry) => entry.type === "work"),
-      learnings: entriesByWeek[dateString].filter(
-        (entry) => entry.type === "learning"
-      ),
-      interestingThings: entriesByWeek[dateString].filter(
-        (entry) => entry.type === "interesting-thing"
-      ),
-    }));
+  const weeks = Object.keys(entriesByWeek).map((dateString) => ({
+    dateString,
+    work: entriesByWeek[dateString].filter((entry) => entry.type === "work"),
+    learnings: entriesByWeek[dateString].filter(
+      (entry) => entry.type === "learning"
+    ),
+    interestingThings: entriesByWeek[dateString].filter(
+      (entry) => entry.type === "interesting-thing"
+    ),
+  }));
 
   return (
     <>
       {session.isAdmin && (
-        <div className="my-8 border p-2">
-          <p className="italic">Create an entry.</p>
+        <div className="my-8 rounded-lg border border-gray-700/30 bg-gray-800/50 p-4">
+          <p className="text-sm font-medium text-gray-500">New entry</p>
           <EntryForm />
         </div>
       )}
@@ -179,7 +177,7 @@ function EntryListItem({
       {session.isAdmin && (
         <Link
           to={`/entries/${entry.id}/edit`}
-          className="ml-2 text-blue-500 opacity-0 group-hover:opacity-100"
+          className="ml-2 text-sky-500 opacity-0 group-hover:opacity-100"
         >
           Edit
         </Link>

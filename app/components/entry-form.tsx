@@ -20,64 +20,73 @@ export default function EntryForm({
   }, [fetcher.state, fetcher.data]);
 
   return (
-    <fetcher.Form method="post">
+    <fetcher.Form method="post" className="mt-4">
       <fieldset
         className="disabled:opacity-70"
         disabled={fetcher.state !== "idle"}
       >
         <div>
-          {/* Date */}
-          <div className="mt-4">
-            <input
-              defaultValue={entry?.date ?? format(new Date(), "yyyy-MM-dd")}
-              type="date"
-              name="date"
-              className="text-gray-700"
-            />
+          <div className="space-y-6">
+            {/* date */}
+            <div>
+              <input
+                defaultValue={entry?.date ?? format(new Date(), "yyyy-MM-dd")}
+                type="date"
+                name="date"
+                className="w-full rounded-md border-gray-700 bg-gray-800 text-white focus:border-sky-600 focus:ring-sky-600"
+                style={{ colorScheme: "dark" }}
+                required
+              />
+            </div>
+
+            {/* category */}
+            <div className="flex space-x-4 text-sm">
+              {[
+                {
+                  label: "Work",
+                  value: "work",
+                },
+                {
+                  label: "Learning",
+                  value: "learning",
+                },
+                {
+                  label: "Interesting things",
+                  value: "interesting-thing",
+                },
+              ].map(({ label, value }) => (
+                <label key={value} className="inline-block text-white">
+                  <input
+                    className="mr-2 border-gray-700 bg-gray-800 text-sky-600 focus:ring-sky-600 focus:ring-offset-gray-900"
+                    type="radio"
+                    name="category"
+                    value={value}
+                    required
+                    defaultChecked={value === (entry?.type ?? "work")}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+
+            {/* text field */}
+            <div>
+              <textarea
+                ref={textAreaRef}
+                name="text"
+                className="w-full rounded-md border-gray-700 bg-gray-800 text-white focus:border-sky-600 focus:ring-sky-600"
+                rows={3}
+                placeholder="Write your entry..."
+                required
+                defaultValue={entry?.text ?? ""}
+              />
+            </div>
           </div>
-          <div className="mt-4 space-x-4">
-            {[
-              {
-                label: "Work",
-                value: "work",
-              },
-              {
-                label: "Learning",
-                value: "learning",
-              },
-              {
-                label: "Interesting things",
-                value: "interesting-thing",
-              },
-            ].map(({ label, value }) => (
-              <label key={value}>
-                <input
-                  className="mr-1"
-                  type="radio"
-                  name="category"
-                  value={value}
-                  required
-                  defaultChecked={value === (entry?.type ?? "work")}
-                />
-                {label}
-              </label>
-            ))}
-          </div>
-          {/* text field */}
-          <div className="mt-4">
-            <textarea
-              ref={textAreaRef}
-              name="text"
-              className="w-full text-gray-700"
-              placeholder="Write your entry..."
-              required
-              defaultValue={entry?.text ?? ""}
-            />
-          </div>
+
           {/* submit button */}
-          <div className="mt-1 text-right">
+          <div className="mt-6 text-right">
             <button
-              className="bg-blue-500 px-4 py-1 font-medium text-white "
+              className="w-full rounded-md bg-sky-600 px-3 py-2 font-medium text-white focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 focus:ring-offset-gray-900"
               type="submit"
             >
               {fetcher.state !== "idle" ? "Saving..." : "Save"}
